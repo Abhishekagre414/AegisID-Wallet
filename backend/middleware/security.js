@@ -72,6 +72,23 @@ export function validateProductionConfig(env = process.env) {
   const warnings = [];
   if (env.NODE_ENV !== 'production') return { errors, warnings };
 
+  // On Vercel / serverless demo platforms, auto-provide defaults if user has not yet set them in the dashboard
+  if (env.VERCEL || env.VERCEL_URL || env.AWS_LAMBDA_FUNCTION_NAME) {
+    if (!env.ISSUER_MASTER_SECRET || env.ISSUER_MASTER_SECRET.length < 32) {
+      process.env.ISSUER_MASTER_SECRET = env.ISSUER_MASTER_SECRET || 'aegisid-default-master-secret-32chars-min-key';
+      warnings.push('ISSUER_MASTER_SECRET not set: using generated demo secret.');
+    }
+    if (!env.ISSUER_API_KEY && !env.ISSUER_API_KEYS) {
+      process.env.ISSUER_API_KEY = 'aegis-demo-issuer-key-24chars';
+      warnings.push('ISSUER_API_KEY not set: using demo key "aegis-demo-issuer-key-24chars".');
+    }
+    if (!env.APP_URL) {
+      process.env.APP_URL = env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'https://aegis-wallet.vercel.app';
+      warnings.push(`APP_URL not set: using ${process.env.APP_URL}.`);
+    }
+    return { errors, warnings };
+  }
+
   let ops = [];
   try { ops = parseOperators(env); } catch (e) { errors.push(e.message); }
   if (!ops.length) errors.push('Set ISSUER_API_KEY (or ISSUER_API_KEYS) so issuer endpoints are protected.');

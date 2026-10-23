@@ -4,10 +4,12 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** Data directory (override with DATA_DIR; tests use a temp dir). */
+/** Data directory (override with DATA_DIR; serverless uses /tmp; tests use a temp dir). */
 export const DATA_DIR = process.env.DATA_DIR
   ? path.resolve(process.env.DATA_DIR)
-  : path.join(__dirname, '..', 'data');
+  : (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)
+    ? path.join('/tmp', 'aegis-data')
+    : path.join(__dirname, '..', 'data');
 
 fs.mkdirSync(DATA_DIR, { recursive: true });
 
