@@ -1,0 +1,25 @@
+{
+  "name": "backend",
+  "version": "2.1.0",
+  "description": "AegisID backend: DID resolution, VC issuance/verification, selective disclosure and revocation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "backup": "node scripts/backup.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "dependencies": {
+    "bs58": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0"
+  }
+}

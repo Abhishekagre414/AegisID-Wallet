@@ -1,0 +1,28 @@
+# Real production needs a PERSISTENT DISK, so this uses a paid plan.
+# (Render's free plan wipes the disk on every restart: revocations and issuance records would be lost.)
+services:
+  - type: web
+    name: aegis-did-wallet
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/ready
+    disk:
+      name: aegis-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+      - key: ISSUER_API_KEY
+        generateValue: true      # view it in the Render dashboard; paste it in the Issuer Portal
+      - key: ISSUER_MASTER_SECRET
+        generateValue: true      # keeps issuer DIDs stable across redeploys (no keys on disk)
+      - key: APP_URL
+        sync: false              # REQUIRED: https://<your-service>.onrender.com (server refuses to start otherwise)
